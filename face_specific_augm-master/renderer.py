@@ -21,9 +21,17 @@ def warpImg(img, t_height, t_width, prj, idx):
     new_img = np.zeros((t_height*t_width, 3))
     ## In case we have some points
     if prj.size != 0:
+        """
         pixels = cv2.remap(img, np.squeeze( np.asarray( prj[0,:] ) ).astype('float32'),\
          np.squeeze( np.asarray( prj[1,:] ) ).astype('float32').reshape(t_height, t_width),  cv2.INTER_CUBIC)
         pixels = pixels.reshape(pixels.shape[0]*pixels.shape[1], pixels.shape[2])
+        """
+
+        pixels = cv2.remap(img, np.squeeze(np.asarray(prj[0, :])).astype('float32').reshape(t_height, t_width),
+                           np.squeeze(np.asarray(prj[1, :])).astype('float32').reshape(t_height, t_width),
+                           cv2.INTER_CUBIC)
+        pixels = pixels.reshape(pixels.shape[0] * pixels.shape[1], pixels.shape[2])
+
         #pixels = pixels[:,0,:]
         new_img[idx,:] = pixels
     else:
@@ -137,6 +145,7 @@ def mysoftSymmetry(img, frontal_raw, ref_U, in_proj, \
         synth_frontal_acc = cv2.GaussianBlur(synth_frontal_acc, (ksize_acc, ksize_acc), 30., borderType=cv2.BORDER_REPLICATE)
         ## Checking which side has more occlusions?
         midcolumn = np.round(ref_U.shape[1]/2)
+        midcolumn = int(midcolumn)
         # apply soft symmetry to use whatever parts are visible in ocluded side
         synth_frontal_acc = synth_frontal_acc.reshape(-1, order='F')
         minacc=synth_frontal_acc[facemask].min()
